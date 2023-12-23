@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        #map {
+            width: 918px;
+            height: 769px;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/RoutesReachability_2.js"></script>
+        <script src="data/BTSSoloRoutes_3.js"></script>
+        <script src="data/BusStops_4.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[-7.546277068911999,110.72399192904284],[-7.499290587954535,110.78020952629379]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleMaps_0');
+        map.getPane('pane_GoogleMaps_0').style.zIndex = 400;
+        var layer_GoogleMaps_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleMaps_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_GoogleMaps_0;
+        map.addLayer(layer_GoogleMaps_0);
+        map.createPane('pane_Positronretina_1');
+        map.getPane('pane_Positronretina_1').style.zIndex = 401;
+        var layer_Positronretina_1 = L.tileLayer('https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png', {
+            pane: 'pane_Positronretina_1',
+            opacity: 1.0,
+            attribution: '<a href="https://cartodb.com/basemaps/">Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_Positronretina_1;
+        map.addLayer(layer_Positronretina_1);
+        function pop_RoutesReachability_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['FID'] !== null ? autolinker.link(feature.properties['FID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['layer'] !== null ? autolinker.link(feature.properties['layer'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_RoutesReachability_2_0(feature) {
+            switch(String(feature.properties['layer'])) {
+                case 'Koridor 1':
+                    return {
+                pane: 'pane_RoutesReachability_2',
+                stroke: false, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(208,69,86,0.30196078431372547)',
+                interactive: false,
+            }
+                    break;
+                case 'Koridor 2':
+                    return {
+                pane: 'pane_RoutesReachability_2',
+                stroke: false, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(82,209,139,0.30196078431372547)',
+                interactive: false,
+            }
+                    break;
+                case 'Koridor 3':
+                    return {
+                pane: 'pane_RoutesReachability_2',
+                stroke: false, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(82,186,231,0.30196078431372547)',
+                interactive: false,
+            }
+                    break;
+                case 'Koridor 4':
+                    return {
+                pane: 'pane_RoutesReachability_2',
+                stroke: false, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(203,179,107,0.30196078431372547)',
+                interactive: false,
+            }
+                    break;
+                case 'Koridor 5':
+                    return {
+                pane: 'pane_RoutesReachability_2',
+                stroke: false, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(152,227,102,0.30196078431372547)',
+                interactive: false,
+            }
+                    break;
+                case 'Koridor 6':
+                    return {
+                pane: 'pane_RoutesReachability_2',
+                stroke: false, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(208,95,206,0.30196078431372547)',
+                interactive: false,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_RoutesReachability_2');
+        map.getPane('pane_RoutesReachability_2').style.zIndex = 402;
+        map.getPane('pane_RoutesReachability_2').style['mix-blend-mode'] = 'normal';
+        var layer_RoutesReachability_2 = new L.geoJson(json_RoutesReachability_2, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_RoutesReachability_2',
+            layerName: 'layer_RoutesReachability_2',
+            pane: 'pane_RoutesReachability_2',
+            onEachFeature: pop_RoutesReachability_2,
+            style: style_RoutesReachability_2_0,
+        });
+        bounds_group.addLayer(layer_RoutesReachability_2);
+        map.addLayer(layer_RoutesReachability_2);
+        function pop_BTSSoloRoutes_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['layer'] !== null ? autolinker.link(feature.properties['layer'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_BTSSoloRoutes_3_0(feature) {
+            switch(String(feature.properties['layer'])) {
+                case 'Koridor 1':
+                    return {
+                pane: 'pane_BTSSoloRoutes_3',
+                opacity: 1,
+                color: 'rgba(208,69,86,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 8.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'Koridor 2':
+                    return {
+                pane: 'pane_BTSSoloRoutes_3',
+                opacity: 1,
+                color: 'rgba(82,209,139,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 8.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'Koridor 3':
+                    return {
+                pane: 'pane_BTSSoloRoutes_3',
+                opacity: 1,
+                color: 'rgba(82,186,231,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 8.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'Koridor 4':
+                    return {
+                pane: 'pane_BTSSoloRoutes_3',
+                opacity: 1,
+                color: 'rgba(203,179,107,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 8.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'Koridor 5':
+                    return {
+                pane: 'pane_BTSSoloRoutes_3',
+                opacity: 1,
+                color: 'rgba(152,227,102,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 8.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'Koridor 6':
+                    return {
+                pane: 'pane_BTSSoloRoutes_3',
+                opacity: 1,
+                color: 'rgba(208,95,206,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 8.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_BTSSoloRoutes_3');
+        map.getPane('pane_BTSSoloRoutes_3').style.zIndex = 403;
+        map.getPane('pane_BTSSoloRoutes_3').style['mix-blend-mode'] = 'normal';
+        var layer_BTSSoloRoutes_3 = new L.geoJson(json_BTSSoloRoutes_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_BTSSoloRoutes_3',
+            layerName: 'layer_BTSSoloRoutes_3',
+            pane: 'pane_BTSSoloRoutes_3',
+            onEachFeature: pop_BTSSoloRoutes_3,
+            style: style_BTSSoloRoutes_3_0,
+        });
+        bounds_group.addLayer(layer_BTSSoloRoutes_3);
+        map.addLayer(layer_BTSSoloRoutes_3);
+        function pop_BusStops_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Name'] !== null ? autolinker.link(feature.properties['Name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['layer'] !== null ? autolinker.link(feature.properties['layer'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_BusStops_4_0() {
+            return {
+                pane: 'pane_BusStops_4',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_BusStops_4');
+        map.getPane('pane_BusStops_4').style.zIndex = 404;
+        map.getPane('pane_BusStops_4').style['mix-blend-mode'] = 'normal';
+        var layer_BusStops_4 = new L.geoJson(json_BusStops_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_BusStops_4',
+            layerName: 'layer_BusStops_4',
+            pane: 'pane_BusStops_4',
+            onEachFeature: pop_BusStops_4,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_BusStops_4_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_BusStops_4);
+        map.addLayer(layer_BusStops_4);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/BusStops_4.png" /> Bus Stops': layer_BusStops_4,'BTS Solo Routes<br /><table><tr><td style="text-align: center;"><img src="legend/BTSSoloRoutes_3_Koridor1BandaraAdiSumarmoTerminalPalur0.png" /></td><td>Koridor 1 | Bandara Adi Sumarmo – Terminal Palur</td></tr><tr><td style="text-align: center;"><img src="legend/BTSSoloRoutes_3_Koridor2SubTerminalKertenTerminalPalur1.png" /></td><td>Koridor 2 | Sub Terminal Kerten – Terminal Palur</td></tr><tr><td style="text-align: center;"><img src="legend/BTSSoloRoutes_3_Koridor3TerminalKartosuroTuguCembengan2.png" /></td><td>Koridor 3 | Terminal Kartosuro – Tugu Cembengan</td></tr><tr><td style="text-align: center;"><img src="legend/BTSSoloRoutes_3_Koridor4TerminalKartosuroTerminalPalurviaTerminalTirtonadi3.png" /></td><td>Koridor 4 | Terminal Kartosuro – Terminal Palur (via Terminal Tirtonadi)</td></tr><tr><td style="text-align: center;"><img src="legend/BTSSoloRoutes_3_Koridor5TerminalKartasuraBekonang4.png" /></td><td>Koridor 5 | Terminal Kartasura – Bekonang </td></tr><tr><td style="text-align: center;"><img src="legend/BTSSoloRoutes_3_Koridor6TerminalTirtonadiSoloBaru5.png" /></td><td>Koridor 6 | Terminal Tirtonadi – Solo Baru</td></tr></table>': layer_BTSSoloRoutes_3,'Routes Reachability<br /><table><tr><td style="text-align: center;"><img src="legend/RoutesReachability_2_Koridor10.png" /></td><td>Koridor 1</td></tr><tr><td style="text-align: center;"><img src="legend/RoutesReachability_2_Koridor21.png" /></td><td>Koridor 2</td></tr><tr><td style="text-align: center;"><img src="legend/RoutesReachability_2_Koridor32.png" /></td><td>Koridor 3</td></tr><tr><td style="text-align: center;"><img src="legend/RoutesReachability_2_Koridor43.png" /></td><td>Koridor 4</td></tr><tr><td style="text-align: center;"><img src="legend/RoutesReachability_2_Koridor54.png" /></td><td>Koridor 5</td></tr><tr><td style="text-align: center;"><img src="legend/RoutesReachability_2_Koridor65.png" /></td><td>Koridor 6</td></tr></table>': layer_RoutesReachability_2,"Positron (retina)": layer_Positronretina_1,"Google Maps": layer_GoogleMaps_0,},{collapsed:false}).addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_BusStops_4,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'Name'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        </script>
+    </body>
+</html>
